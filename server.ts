@@ -43,7 +43,7 @@ app.post('/api/login', async (req, res) => {
                 username: user.username,
                 fullName: user.full_name,
                 department: user.department,
-                role: 'USER', // You might want to add a 'role' column to your DB later
+                role: user.role, // You might want to add a 'role' column to your DB later
                 companyId: 'TC-EMP-' + user.id // Fake company ID for now
             }
         });
