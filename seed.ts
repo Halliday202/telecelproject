@@ -33,5 +33,3 @@ async function createEmployee() {
 }
 
 createEmployee();
-
-//test
