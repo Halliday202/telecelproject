@@ -9,31 +9,18 @@ const SEED_USERS: User[] = [
     password: 'admin123',
     department: 'IT Support',
     role: UserRole.ADMIN,
-    fullName: 'System Administrator',
+    fullName: 'Jimmy Carter',
     email: 'admin@telecel.com'
   },
   {
     id: '849201',
     companyId: 'TC-EMP-55',
-    username: 'john.doe',
+    username: 'jimmy',
     password: 'password123',
     department: 'Sales',
     role: UserRole.USER,
-    fullName: 'John Doe',
-    email: 'john.doe@telecel.com'
-  }
-];
-
-const SEED_TICKETS: Ticket[] = [
-  {
-    id: 't-1001',
-    userId: '849201',
-    title: 'Cannot access CRM',
-    description: 'When I try to login to the CRM portal, it gives a 502 Bad Gateway error.',
-    department: 'Sales',
-    status: TicketStatus.PENDING,
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-    updatedAt: new Date(Date.now() - 86400000).toISOString(),
+    fullName: 'Jimmy',
+    email: 'jimmy@telecel.com'
   }
 ];
 
@@ -114,32 +101,33 @@ export const Backend = {
     }
   },
 
-  // --- Tickets ---
-  getTickets: (): Ticket[] => {
-    const stored = localStorage.getItem('ts_tickets');
-    return stored ? JSON.parse(stored) : SEED_TICKETS;
+  // --- Tickets (REAL DATABASE) ---
+
+  getTickets: async (): Promise<Ticket[]> => {
+    try {
+      const response = await fetch('http://localhost:5000/api/tickets');
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching tickets:", error);
+      return [];
+    }
   },
 
-  createTicket: (ticketData: Omit<Ticket, 'id' | 'createdAt' | 'updatedAt' | 'status'>): Ticket => {
-    const tickets = Backend.getTickets();
-    const newTicket: Ticket = {
-      ...ticketData,
-      id: `t-${Date.now()}`,
-      status: TicketStatus.PENDING,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    tickets.unshift(newTicket);
-    localStorage.setItem('ts_tickets', JSON.stringify(tickets));
-    return newTicket;
+  createTicket: async (ticketData: any): Promise<Ticket> => {
+    const response = await fetch('http://localhost:5000/api/tickets', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(ticketData),
+    });
+    return await response.json();
   },
 
-  updateTicketStatus: (ticketId: string, status: TicketStatus) => {
-    const tickets = Backend.getTickets();
-    const updated = tickets.map(t =>
-      t.id === ticketId ? { ...t, status, updatedAt: new Date().toISOString() } : t
-    );
-    localStorage.setItem('ts_tickets', JSON.stringify(updated));
+  updateTicketStatus: async (ticketId: string, status: TicketStatus) => {
+    await fetch(`http://localhost:5000/api/tickets/${ticketId}/status`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status }),
+    });
   },
 
   // --- Chat ---

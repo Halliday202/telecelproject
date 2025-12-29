@@ -3,12 +3,12 @@ import bcrypt from 'bcrypt';
 
 async function createEmployee() {
     // --- CONFIGURATION ---
-    const username = 'joycee';
-    const fullName = 'Joyce Ama';
-    const email = 'joyceh@telecel.com';
-    const department = 'Customer Support';
-    const plainPassword = 'joyce';
-    const role = 'USER';
+    const username = 'admin';
+    const fullName = 'System Administrator';
+    const email = 'admin@telecel.com';
+    const department = 'IT Department';
+    const plainPassword = 'grimreaper';
+    const role = 'ADMIN';
 
     try {
         console.log(`🔒 Hashing password for ${username}...`);
