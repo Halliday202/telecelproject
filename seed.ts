@@ -1,12 +1,12 @@
-import { query } from './db.ts'; // Kept the .ts extension you need
+import { query } from './db.ts';
 import bcrypt from 'bcrypt';
 
 async function createEmployee() {
-    const username = 'admin';         // <--- New field
-    const fullName = 'Jimmy Carter';
-    const email = 'jimmycart@telecel.com.gh';
-    const department = 'IT Support';
-    const plainPassword = 'admin123';
+    const username = 'jamie';
+    const fullName = 'James Bond';
+    const email = 'jamie@telecel.com.gh';
+    const department = 'Customer Support';
+    const plainPassword = 'nigga';
 
     try {
         console.log(`🔒 Hashing password for ${username}...`);
