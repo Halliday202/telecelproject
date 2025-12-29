@@ -1,28 +1,6 @@
 import { User, Ticket, ChatMessage, UserRole, TicketStatus } from '../types';
 
-// Initial Seed Data (Keeping this prevents other parts of the app from crashing)
-const SEED_USERS: User[] = [
-  {
-    id: '100001',
-    companyId: 'TC-ADM-01',
-    username: 'admin',
-    password: 'admin123',
-    department: 'IT Support',
-    role: UserRole.ADMIN,
-    fullName: 'Jimmy Carter',
-    email: 'admin@telecel.com'
-  },
-  {
-    id: '849201',
-    companyId: 'TC-EMP-55',
-    username: 'jimmy',
-    password: 'password123',
-    department: 'Sales',
-    role: UserRole.USER,
-    fullName: 'Jimmy',
-    email: 'jimmy@telecel.com'
-  }
-];
+
 
 // Helper to generate 6-digit ID
 const generateId = () => Math.floor(100000 + Math.random() * 900000).toString();
@@ -31,26 +9,38 @@ const generateId = () => Math.floor(100000 + Math.random() * 900000).toString();
 
 export const Backend = {
   // --- Auth & Users ---
-  getUsers: (): User[] => {
-    const stored = localStorage.getItem('ts_users');
-    return stored ? JSON.parse(stored) : SEED_USERS;
+  // --- Auth & Users (REAL DATABASE) ---
+
+  getUsers: async (): Promise<User[]> => {
+    try {
+      const response = await fetch('http://localhost:5000/api/users');
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      return [];
+    }
   },
 
-  createUser: (userData: Omit<User, 'id'>): User => {
-    const users = Backend.getUsers();
-    if (users.find(u => u.username === userData.username)) {
-      throw new Error('Username already exists');
+  createUser: async (userData: any): Promise<User> => {
+    const response = await fetch('http://localhost:5000/api/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to create user');
     }
 
-    const newUser: User = {
-      ...userData,
-      id: generateId(),
-      companyId: `TC-EMP-${Math.floor(100 + Math.random() * 900)}`
-    };
+    return await response.json();
+  },
 
-    users.push(newUser);
-    localStorage.setItem('ts_users', JSON.stringify(users));
-    return newUser;
+  // Add this new function for deleting
+  deleteUser: async (userId: string): Promise<void> => {
+    await fetch(`http://localhost:5000/api/users/${userId}`, {
+      method: 'DELETE',
+    });
   },
 
   resetPassword: (userId: string): string => {

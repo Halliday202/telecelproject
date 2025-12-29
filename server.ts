@@ -54,6 +54,59 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+// --- USER MANAGEMENT ROUTES ---
+
+// 1. GET ALL USERS (For the Dashboard List)
+app.get('/api/users', async (req, res) => {
+    try {
+        // We select everything EXCEPT the password hash for security
+        const sql = 'SELECT id, username, full_name as "fullName", email, department, role, created_at FROM users ORDER BY id ASC';
+        const result = await query(sql);
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to fetch users" });
+    }
+});
+
+// 2. CREATE USER (For the "Create User" Button)
+app.post('/api/users', async (req, res) => {
+    const { username, fullName, email, department, role } = req.body;
+    const defaultPassword = 'password123'; // Default password for new employees
+
+    try {
+        // Hash the default password
+        const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+
+        const sql = `
+            INSERT INTO users (username, full_name, email, department, role, password_hash)
+            VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING id, username, full_name as "fullName", email, role;
+        `;
+
+        const result = await query(sql, [username, fullName, email, department, role || 'USER', hashedPassword]);
+        res.json(result.rows[0]);
+    } catch (err: any) {
+        console.error(err);
+        // Check for duplicate username/email error
+        if (err.code === '23505') {
+            return res.status(400).json({ error: "Username or Email already exists" });
+        }
+        res.status(500).json({ error: "Failed to create user" });
+    }
+});
+
+// 3. DELETE USER (For the Delete Button we will add)
+app.delete('/api/users/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await query('DELETE FROM users WHERE id = $1', [id]);
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to delete user" });
+    }
+});
 // Start the server
 app.listen(PORT, () => {
     console.log(`\n🚀 Server is running on http://localhost:${PORT}`);

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Trash2 } from 'lucide-react';
 import { User, Ticket, UserRole, TicketStatus } from './types';
 import { Layout } from './components/Layout';
 import { Button } from './components/Button';
@@ -870,6 +871,23 @@ const App: React.FC = () => {
                         className="text-slate-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400"
                       >
                         <Key className="w-4 h-4 mr-1" /> Reset Pass
+                      </Button>
+                      {/* NEW DELETE BUTTON */}
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={async () => {
+                          if (confirm(`Are you sure you want to delete ${u.fullName}?`)) {
+                            await Backend.deleteUser(u.id); // Call the new backend function
+                            refreshData(); // Refresh the list instantly
+                            showToast('User deleted successfully', 'success');
+                          }
+                        }}
+                        title="Delete User"
+                        className="ml-2 text-slate-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400"
+                      >
+                        {/* You might need to import 'Trash2' from lucide-react at the top! */}
+                        <Trash2 className="w-4 h-4 mr-1" /> Delete
                       </Button>
                     </td>
                   </tr>
