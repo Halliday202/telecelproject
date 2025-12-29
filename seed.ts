@@ -2,11 +2,13 @@ import { query } from './db.ts';
 import bcrypt from 'bcrypt';
 
 async function createEmployee() {
-    const username = 'kid';
-    const fullName = 'Little Kid';
-    const email = 'lit.kid@telecel.com'; // Change email slightly to avoid "unique" error if he still exists
+    // --- CONFIGURATION ---
+    const username = 'joycee';
+    const fullName = 'Joyce Ama';
+    const email = 'joyceh@telecel.com';
     const department = 'Customer Support';
-    const plainPassword = 'kiddo';
+    const plainPassword = 'joyce';
+    const role = 'USER';
 
     try {
         console.log(`🔒 Hashing password for ${username}...`);
@@ -14,21 +16,23 @@ async function createEmployee() {
 
         console.log('📝 Inserting into database...');
 
-        // Updated SQL to include username
+        // We added "role" to this query
         const sql = `
-            INSERT INTO users (username, full_name, email, department, password_hash) 
-            VALUES ($1, $2, $3, $4, $5) 
-            RETURNING id, username, full_name;
+            INSERT INTO users (username, full_name, email, department, password_hash, role) 
+            VALUES ($1, $2, $3, $4, $5, $6) 
+            RETURNING id, username, role;
         `;
 
-        // Added username to the list of data we send
-        const res = await query(sql, [username, fullName, email, department, hashedPassword]);
+        const res = await query(sql, [username, fullName, email, department, hashedPassword, role]);
 
-        console.log('✅ User created successfully!');
+        console.log('✅ SUPER USER created successfully!');
         console.table(res.rows[0]);
 
-    } catch (err) {
-        console.error('❌ Error creating user:', err);
+    } catch (err: any) {
+        console.error('❌ Error creating user:', err.message);
+        if (err.code === '23505') {
+            console.log('💡 TIP: Run "npx ts-node delete_user.ts" first!');
+        }
     }
 }
 

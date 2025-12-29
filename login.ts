@@ -37,10 +37,10 @@ async function login(usernameInput: string, passwordInput: string) {
 // --- TEST ZONE ---
 
 // Test 1: Correct credentials (should work)
-login('kwamz', 'pass123');
+login('kid', 'kiddo');
 
 // Test 2: Wrong password (should fail)
 // setTimeout just ensures this runs after the first one so logs don't mix
 setTimeout(() => {
-    login('kwamz', 'WrongPass');
+    login('kid', 'WrongPass');
 }, 1000);

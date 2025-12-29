@@ -17,4 +17,4 @@ async function deleteUser(usernameTarget: string) {
 }
 
 // Change this string to whoever you want to delete
-deleteUser('jamie');
+deleteUser('admin');
