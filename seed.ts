@@ -2,11 +2,11 @@ import { query } from './db.ts';
 import bcrypt from 'bcrypt';
 
 async function createEmployee() {
-    const username = 'jamie';
-    const fullName = 'James Bond';
-    const email = 'jamie@telecel.com.gh';
+    const username = 'kid';
+    const fullName = 'Little Kid';
+    const email = 'lit.kid@telecel.com'; // Change email slightly to avoid "unique" error if he still exists
     const department = 'Customer Support';
-    const plainPassword = 'nigga';
+    const plainPassword = 'kiddo';
 
     try {
         console.log(`🔒 Hashing password for ${username}...`);
